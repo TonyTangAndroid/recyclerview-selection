@@ -2,13 +2,6 @@ package com.androidkt.recyclerviewselection;
 
 import android.os.Bundle;
 import android.os.PersistableBundle;
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.view.ActionMode;
-import androidx.recyclerview.widget.DefaultItemAnimator;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,25 +13,27 @@ import com.androidkt.recyclerviewselection.adapter.MyItemLookup;
 import com.androidkt.recyclerviewselection.model.Item;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.view.ActionMode;
 import androidx.recyclerview.selection.ItemDetailsLookup;
 import androidx.recyclerview.selection.OnDragInitiatedListener;
 import androidx.recyclerview.selection.OnItemActivatedListener;
 import androidx.recyclerview.selection.SelectionTracker;
 import androidx.recyclerview.selection.StorageStrategy;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
     MenuItem selectedItemCount;
-    SelectionTracker selectionTracker;
-    private RecyclerView itemListView;
-    private ItemListAdapter mAdapter;
-    private RecyclerView.LayoutManager mLayoutManager;
-    private List<Item> itemList;
+    SelectionTracker<Long> selectionTracker;
     private ActionMode actionMode;
 
     @Override
@@ -47,17 +42,17 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
 
-        itemList = getRandomList();
-        itemListView = findViewById(R.id.itemList);
+        List<Item> itemList = getRandomList();
+        RecyclerView itemListView = findViewById(R.id.itemList);
 
         itemListView.setHasFixedSize(true);
 
-        mLayoutManager = new LinearLayoutManager(this);
-        itemListView.setLayoutManager(mLayoutManager);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
+        itemListView.setLayoutManager(layoutManager);
         itemListView.setItemAnimator(new DefaultItemAnimator());
         itemListView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
-        mAdapter = new ItemListAdapter(itemList);
-        itemListView.setAdapter(mAdapter);
+        ItemListAdapter itemListAdapter = new ItemListAdapter(itemList);
+        itemListView.setAdapter(itemListAdapter);
 
 
         selectionTracker = new SelectionTracker.Builder<>(
@@ -83,10 +78,10 @@ public class MainActivity extends AppCompatActivity {
 
                 })
                 .build();
-        mAdapter.setSelectionTracker(selectionTracker);
-        selectionTracker.addObserver(new SelectionTracker.SelectionObserver() {
+        itemListAdapter.setSelectionTracker(selectionTracker);
+        selectionTracker.addObserver(new SelectionTracker.SelectionObserver<Long>() {
             @Override
-            public void onItemStateChanged(@NonNull Object key, boolean selected) {
+            public void onItemStateChanged(@NonNull Long key, boolean selected) {
                 super.onItemStateChanged(key, selected);
             }
 
@@ -99,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
             public void onSelectionChanged() {
                 super.onSelectionChanged();
                 if (selectionTracker.hasSelection() && actionMode == null) {
-                    actionMode = startSupportActionMode(new ActionModeController(MainActivity.this, selectionTracker));
+                    actionMode = startSupportActionMode(new ActionModeController(selectionTracker));
                     setMenuItemTitle(selectionTracker.getSelection().size());
                 } else if (!selectionTracker.hasSelection() && actionMode != null) {
                     actionMode.finish();
@@ -107,9 +102,8 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     setMenuItemTitle(selectionTracker.getSelection().size());
                 }
-                Iterator<Item> itemIterable = selectionTracker.getSelection().iterator();
-                while (itemIterable.hasNext()) {
-                    Log.i(TAG, itemIterable.next().getItemName());
+                for (Long itemId : selectionTracker.getSelection()) {
+                    Log.i(TAG, "ID:" + itemId);
                 }
             }
 

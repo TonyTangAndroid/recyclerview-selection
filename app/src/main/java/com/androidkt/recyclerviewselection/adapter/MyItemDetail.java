@@ -1,16 +1,15 @@
 package com.androidkt.recyclerviewselection.adapter;
 
-import androidx.annotation.Nullable;
-
 import com.androidkt.recyclerviewselection.model.Item;
 
+import androidx.annotation.Nullable;
 import androidx.recyclerview.selection.ItemDetailsLookup;
 
 /**
  * Created by brijesh on 27/3/18.
  */
 
-public class MyItemDetail extends ItemDetailsLookup.ItemDetails {
+public class MyItemDetail extends ItemDetailsLookup.ItemDetails<Long> {
     private final int adapterPosition;
     private final Item selectionKey;
 
@@ -26,7 +25,7 @@ public class MyItemDetail extends ItemDetailsLookup.ItemDetails {
 
     @Nullable
     @Override
-    public Object getSelectionKey() {
-        return selectionKey;
+    public Long getSelectionKey() {
+        return selectionKey.getItemId();
     }
 }

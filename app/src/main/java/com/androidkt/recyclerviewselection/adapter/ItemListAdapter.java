@@ -1,7 +1,6 @@
 package com.androidkt.recyclerviewselection.adapter;
 
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
+import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,8 +11,10 @@ import com.androidkt.recyclerviewselection.model.Item;
 
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.selection.ItemDetailsLookup;
 import androidx.recyclerview.selection.SelectionTracker;
+import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * Created by brijesh on 26/3/18.
@@ -22,7 +23,7 @@ import androidx.recyclerview.selection.SelectionTracker;
 public class ItemListAdapter extends RecyclerView.Adapter<ItemListAdapter.ItemListViewHolder> {
 
     private List<Item> itemList;
-    private SelectionTracker selectionTracker;
+    private SelectionTracker<Long> selectionTracker;
 
     public ItemListAdapter(List<Item> itemList) {
         this.itemList = itemList;
@@ -32,7 +33,7 @@ public class ItemListAdapter extends RecyclerView.Adapter<ItemListAdapter.ItemLi
         return selectionTracker;
     }
 
-    public void setSelectionTracker(SelectionTracker selectionTracker) {
+    public void setSelectionTracker(SelectionTracker<Long> selectionTracker) {
         this.selectionTracker = selectionTracker;
     }
 
@@ -47,7 +48,7 @@ public class ItemListAdapter extends RecyclerView.Adapter<ItemListAdapter.ItemLi
     public void onBindViewHolder(@NonNull ItemListViewHolder holder, int position) {
         Item item = itemList.get(position);
 
-        holder.bind(item, selectionTracker.isSelected(item));
+        holder.bind(item, selectionTracker.isSelected(item.getItemId()));
 
     }
 
@@ -66,6 +67,7 @@ public class ItemListAdapter extends RecyclerView.Adapter<ItemListAdapter.ItemLi
             itemPrice = itemView.findViewById(R.id.itemPrice);
         }
 
+        @SuppressLint("SetTextI18n")
         public final void bind(Item item, boolean isActive) {
             itemView.setActivated(isActive);
             itemPrice.setText(item.getItemPrice() + "$");
@@ -75,7 +77,7 @@ public class ItemListAdapter extends RecyclerView.Adapter<ItemListAdapter.ItemLi
         }
 
         @Override
-        public ItemDetailsLookup.ItemDetails getItemDetails() {
+        public ItemDetailsLookup.ItemDetails<Long> getItemDetails() {
             return new MyItemDetail(getAdapterPosition(), itemList.get(getAdapterPosition()));
         }
     }

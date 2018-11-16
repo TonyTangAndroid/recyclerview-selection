@@ -1,11 +1,9 @@
 package com.androidkt.recyclerviewselection;
 
-import android.content.Context;
-import androidx.appcompat.view.ActionMode;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import androidx.appcompat.view.ActionMode;
 import androidx.recyclerview.selection.SelectionTracker;
 
 /**
@@ -14,11 +12,9 @@ import androidx.recyclerview.selection.SelectionTracker;
 
 public class ActionModeController implements ActionMode.Callback {
 
-    private final Context context;
-    private final SelectionTracker selectionTracker;
+    private final SelectionTracker<Long> selectionTracker;
 
-    public ActionModeController(Context context, SelectionTracker selectionTracker) {
-        this.context = context;
+    public ActionModeController(SelectionTracker<Long>  selectionTracker) {
         this.selectionTracker = selectionTracker;
     }
 
